@@ -1,0 +1,54 @@
+---
+name:  barPlot
+title: Bar Plot
+menuGroup: survejmv
+version: '1.0.0'
+jas: '1.2'
+
+options:
+    - name: data
+      type: Data
+
+    - name: vars
+      title: Variables
+      type: Variables
+      required: true
+      suggested:
+        - nominal
+        - ordinal
+      permitted:
+        - factor
+      
+    - name: group
+      title: Grouping Variable
+      type: Variable
+      suggested:
+        - nominal
+        - ordinal
+      permitted:
+        - factor
+        
+    - name: bar_labels
+      title: Bar Labels
+      type: List
+      options:
+        - title: Counts
+          name: count
+        - title: Frequencies
+          name: freq
+        - title: Percentages
+          name: perc
+      default: count
+      description:
+          R: >
+            `count` (default), `freq`, or `perc`, provide respectively counts,
+            frequencies, or percentages as the bar labels
+        
+    - name: show_na
+      title: Show missing values
+      type: Bool
+      default: false
+      description:
+          R: >
+            `TRUE` or `FALSE` (default), show missing values in the plot
+...

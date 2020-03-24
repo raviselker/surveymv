@@ -1,0 +1,26 @@
+---
+name:  barPlot
+title: Bar Plot
+jrs:   '1.1'
+
+items:
+    - name: plots
+      title: Plots
+      type: Array
+      description: an array of bar plots
+      items: (vars)
+      clearWith:
+        - group
+        - bar_labels
+        - show_na
+      template:
+          title: $key
+          type: Group
+          items:
+            - name: barplot
+              type: Image
+              description: Barplot
+              renderFun: .barplot
+              width: 550
+              clearWith: []
+...

@@ -1,0 +1,43 @@
+title: Bar Plot
+name: barPlot
+jus: '3.0'
+stage: 0
+compilerMode: tame
+children:
+  - type: VariableSupplier
+    persistentItems: false
+    stretchFactor: 1
+    children:
+      - type: TargetLayoutBox
+        label: Variables
+        children:
+          - type: VariablesListBox
+            name: vars
+            isTarget: true
+      - type: TargetLayoutBox
+        label: Grouping Variable
+        children:
+          - type: VariablesListBox
+            name: group
+            maxItemCount: 1
+            isTarget: true
+  - type: LayoutBox
+    margin: large
+    children:
+      - type: Label
+        label: Bar Labels
+        children:
+          - type: RadioButton
+            name: bar_labels_count
+            optionName: bar_labels
+            optionPart: count
+          - type: RadioButton
+            name: bar_labels_freq
+            optionName: bar_labels
+            optionPart: freq
+          - type: RadioButton
+            name: bar_labels_perc
+            optionName: bar_labels
+            optionPart: perc
+      - type: CheckBox
+        name: show_na
