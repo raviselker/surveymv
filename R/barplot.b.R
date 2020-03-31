@@ -16,10 +16,6 @@ barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
         },
         .run = function() {
             
-            unloadNamespace('jmv')
-            unloadNamespace('ggplot2')
-            requireNamespace('ggplot2')
-            
             data <- private$.prepareData()
             private$.prepareBarPlot(data)
 

@@ -17,7 +17,5 @@ Imports:
     tidyr,
     scales,
     forcats,
-    setter,
-    isoband
-Remotes: tidyverse/ggplot2@v3.3.0
+    setter
 RoxygenNote: 7.0.2

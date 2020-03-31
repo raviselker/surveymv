@@ -51,8 +51,7 @@ barPlotSingle = function(data, var, options, ggtheme) {
                        legend.position="none",
                        legend.text = ggplot2::element_text(size=11),
                        legend.title = ggplot2::element_text(size=14),
-                       axis.ticks = ggplot2::element_blank(),
-                       axis.line.x = ggplot2::element_blank())
+                       axis.ticks = ggplot2::element_blank())
     
     if (options$desc && length(description) > 0)
         barPlot = barPlot + 
@@ -80,7 +79,8 @@ barPlotSingle = function(data, var, options, ggtheme) {
     
     if (labels == "in_plot") {
         barPlot = barPlot + ggplot2::geom_text(aesYAxis(yAxis), position=pd, hjust=0, size = 4) + 
-            ggplot2::theme(axis.text.x = ggplot2::element_blank())
+            ggplot2::theme(axis.text.x = ggplot2::element_blank(),
+                           axis.line.x = ggplot2::element_blank())
     } else if (yAxis == "perc") {
         barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
     }
@@ -131,8 +131,7 @@ stackedBarPlotSingle = function(data, var, options, ggtheme) {
                        legend.position="bottom",
                        legend.text = ggplot2::element_text(size=11),
                        legend.title = ggplot2::element_blank(),
-                       axis.ticks = ggplot2::element_blank(),
-                       axis.line.x = ggplot2::element_blank())
+                       axis.ticks.y = ggplot2::element_blank())
     
     if (grouped)
         barPlot = barPlot + ggplot2::theme(axis.text.y = ggplot2::element_text(hjust = 0))
@@ -159,7 +158,9 @@ stackedBarPlotSingle = function(data, var, options, ggtheme) {
                                                          aesYAxis(yAxis), 
                                                          position=ggplot2::position_stack(vjust = 0.5), 
                                                          size = 3) + 
-            ggplot2::theme(axis.text.x = ggplot2::element_blank())
+            ggplot2::theme(axis.text.x = ggplot2::element_blank(),
+                           axis.ticks.x = ggplot2::element_blank(),
+                           axis.line.x = ggplot2::element_blank())
     } else if (yAxis == "perc") {
         barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
     }
@@ -207,7 +208,7 @@ plotSizeBarPlotSingle = function(data, var, options) {
     sizeTitleMain <- 75
     
     if (sub_title) {
-        sizeTitleSub <- 55 + 20 * desc_lines
+        sizeTitleSub <- 40 + 25 * desc_lines
     } else {
         sizeTitleSub <- 0
     }
@@ -254,7 +255,7 @@ plotSizeStackedBarPlotSingle = function(data, var, options) {
     sizeGroup <- 35
     sizeBars <- sizeGroup * nLevelsGroup
     
-    sizeTitleMain <- 75
+    sizeTitleMain <- 40
     
     if (sub_title) {
         sizeTitleSub <- 55 + 20 * desc_lines

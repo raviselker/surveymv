@@ -18,6 +18,6 @@ analyses:
     menuGroup: survejmv
     menuTitle: Bar Plot
 usesNative: true
-minApp: 1.0.8
+minApp: 1.2.14.0
 
 ...
