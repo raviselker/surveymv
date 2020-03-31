@@ -42,13 +42,11 @@ barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             data <- image$state$data
             var <- image$state$var
-            
-            desc <- "This question was about this and that and such and so and this and that this question was about this and that and such and so and this and that?"
-            
+
             if (self$options$bar_type == "stacked") {
-                barPlot <- stackedBarPlotSingle(data, var=var, options=self$options, desc=desc, ggtheme=ggtheme)
+                barPlot <- stackedBarPlotSingle(data, var=var, options=self$options, ggtheme=ggtheme)
             } else {
-                barPlot <- barPlotSingle(data, var=var, options=self$options, desc=desc, ggtheme=ggtheme)
+                barPlot <- barPlotSingle(data, var=var, options=self$options, ggtheme=ggtheme)
             }
             
             return(barPlot)
@@ -71,7 +69,8 @@ barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     dplyr::tally(name = "count") %>% 
                     dplyr::mutate(freq = count/sum(count)) %>%
                     dplyr::mutate_at(dplyr::vars(freq), ~replace(., is.nan(.), 0)) %>%
-                    dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE)))
+                    dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE))) %>%
+                    setter::copy_attributes(self$data[[var]], "jmv-desc")
             }
 
             return(dataList)

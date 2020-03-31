@@ -11,6 +11,7 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             bar_type = "grouped",
             labels = "x_axis",
             x_axis = "count",
+            desc = FALSE,
             show_na = FALSE, ...) {
 
             super$initialize(
@@ -58,6 +59,10 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "freq",
                     "perc"),
                 default="count")
+            private$..desc <- jmvcore::OptionBool$new(
+                "desc",
+                desc,
+                default=FALSE)
             private$..show_na <- jmvcore::OptionBool$new(
                 "show_na",
                 show_na,
@@ -68,6 +73,7 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             self$.addOption(private$..bar_type)
             self$.addOption(private$..labels)
             self$.addOption(private$..x_axis)
+            self$.addOption(private$..desc)
             self$.addOption(private$..show_na)
         }),
     active = list(
@@ -76,6 +82,7 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         bar_type = function() private$..bar_type$value,
         labels = function() private$..labels$value,
         x_axis = function() private$..x_axis$value,
+        desc = function() private$..desc$value,
         show_na = function() private$..show_na$value),
     private = list(
         ..vars = NA,
@@ -83,6 +90,7 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         ..bar_type = NA,
         ..labels = NA,
         ..x_axis = NA,
+        ..desc = NA,
         ..show_na = NA)
 )
 
@@ -108,7 +116,8 @@ barPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "labels",
                     "x_axis",
                     "labels",
-                    "show_na"),
+                    "show_na",
+                    "desc"),
                 template=R6::R6Class(
                     inherit = jmvcore::Group,
                     active = list(
@@ -124,7 +133,6 @@ barPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                                 options=options,
                                 name="barplot",
                                 renderFun=".barplot",
-                                width=550,
                                 clearWith=list()))}))$new(options=options)))}))
 
 barPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
@@ -143,7 +151,8 @@ barPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
                 analysisId = analysisId,
                 revision = revision,
                 pause = NULL,
-                completeWhenFilled = FALSE)
+                completeWhenFilled = FALSE,
+                requiresMissings = TRUE)
         }))
 
 #' Bar Plot
@@ -158,6 +167,8 @@ barPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #'   labels respectively on the x-axis, or on the bar labels
 #' @param x_axis \code{count} (default), \code{freq}, or \code{perc}, provide
 #'   respectively counts, frequencies, or percentages as the bar labels
+#' @param desc \code{TRUE} or \code{FALSE} (default), show variable
+#'   description in the plot
 #' @param show_na \code{TRUE} or \code{FALSE} (default), show missing values
 #'   in the plot
 #' @return A results object containing:
@@ -173,6 +184,7 @@ barPlot <- function(
     bar_type = "grouped",
     labels = "x_axis",
     x_axis = "count",
+    desc = FALSE,
     show_na = FALSE) {
 
     if ( ! requireNamespace('jmvcore'))
@@ -195,6 +207,7 @@ barPlot <- function(
         bar_type = bar_type,
         labels = labels,
         x_axis = x_axis,
+        desc = desc,
         show_na = show_na)
 
     analysis <- barPlotClass$new(

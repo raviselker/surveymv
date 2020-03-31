@@ -1,11 +1,15 @@
-barPlotSingle = function(data, var, options, desc, ggtheme) {
+DESC_SEP_GROUPED_BAR <- 90
+DESC_SEP_STACKED_BAR <- 100
+
+
+barPlotSingle = function(data, var, options, ggtheme) {
     
     group <- options$group
     grouped <- ! is.null(group)
     yAxis <- options$x_axis
     labels <- options$labels
     
-    description <- stringr::str_wrap(desc, 96)
+    description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_GROUPED_BAR)
     barWidth <- 0.65
     pd <- ggplot2::position_dodge(0.85)
     
@@ -50,9 +54,9 @@ barPlotSingle = function(data, var, options, desc, ggtheme) {
                        axis.ticks = ggplot2::element_blank(),
                        axis.line.x = ggplot2::element_blank())
     
-    if (subTitle)
+    if (options$desc && length(description) > 0)
         barPlot = barPlot + 
-        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=12, 
+        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=13, 
                                                              face = "italic", 
                                                              lineheight = 1.15,
                                                              margin = ggplot2::margin(0,0,15,0)))
@@ -86,15 +90,14 @@ barPlotSingle = function(data, var, options, desc, ggtheme) {
 }
 
 
-stackedBarPlotSingle = function(data, var, options, desc, ggtheme) {
+stackedBarPlotSingle = function(data, var, options, ggtheme) {
     
     group <- options$group
     grouped <- ! is.null(group)
     yAxis <- options$x_axis
     labels <- options$labels
     
-    description <- stringr::str_wrap(desc, 106)
-    subTitle <- FALSE
+    description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_STACKED_BAR)
     yLabel <- ifelse(yAxis == "count", "count", "freq")
     
     if (yAxis == "count")
@@ -123,7 +126,7 @@ stackedBarPlotSingle = function(data, var, options, desc, ggtheme) {
                        axis.text.y = ggplot2::element_blank(),
                        axis.text.x = ggplot2::element_text(),
                        plot.title = ggplot2::element_text(hjust = 0),
-                       plot.subtitle =  ggplot2::element_text(hjust = 0, size=12),
+                       plot.subtitle =  ggplot2::element_blank(),
                        plot.title.position="plot",
                        legend.position="bottom",
                        legend.text = ggplot2::element_text(size=11),
@@ -134,9 +137,9 @@ stackedBarPlotSingle = function(data, var, options, desc, ggtheme) {
     if (grouped)
         barPlot = barPlot + ggplot2::theme(axis.text.y = ggplot2::element_text(hjust = 0))
     
-    if (subTitle)
+    if (options$desc && length(description) > 0)
         barPlot = barPlot + 
-        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=12, 
+        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=13, 
                                                              face = "italic", 
                                                              lineheight = 1.15,
                                                              margin = ggplot2::margin(0,0,15,0)))
@@ -170,8 +173,12 @@ plotSizeBarPlotSingle = function(data, var, options) {
     grouped <- ! is.null(group)
     bar_labels <- options$labels
     show_na <- options$show_na
-    sub_title <- FALSE
+    sub_title <- options$desc
     
+    desc_lines <- attr(data[[var]], "jmv-desc") %>% 
+        stringr::str_wrap(DESC_SEP_GROUPED_BAR) %>% 
+        stringr::str_count("\n") %>% magrittr::add(1)
+
     if (grouped) {
         levelsGroup <- levels(data[[group]])
         nLevelsGroup <- length(levelsGroup)
@@ -198,7 +205,13 @@ plotSizeBarPlotSingle = function(data, var, options) {
     sizeBars <- sizeGroup * nLevelsGroup * nLevelsVar
     
     sizeTitleMain <- 75
-    sizeTitleSub <- ifelse(sub_title, 75, 0)
+    
+    if (sub_title) {
+        sizeTitleSub <- 55 + 20 * desc_lines
+    } else {
+        sizeTitleSub <- 0
+    }
+    
     sizeTitle <- sizeTitleMain + sizeTitleSub
     
     width <- 550
@@ -213,7 +226,10 @@ plotSizeStackedBarPlotSingle = function(data, var, options) {
     grouped <- ! is.null(group)
     bar_labels <- options$labels
     show_na <- options$show_na
-    sub_title <- FALSE
+    sub_title <- options$desc
+    desc_lines <- attr(data[[var]], "jmv-desc") %>% 
+        stringr::str_wrap(DESC_SEP_STACKED_BAR) %>% 
+        stringr::str_count("\n") %>% magrittr::add(1)
     
     if (grouped) {
         levelsGroup <- levels(data[[group]])
@@ -228,18 +244,24 @@ plotSizeStackedBarPlotSingle = function(data, var, options) {
     if (bar_labels == "x_axis") {
         sizeXAxis <- 50
     } else {
-        sizeXAxis <- 25
+        sizeXAxis <- 35
     }
     
     levelsVar <- levels(data[[var]])
     nLevelsVar <- length(levelsVar)
     sizeLegend <- 50 + 25 * ceiling(nLevelsVar / 4)
     
-    sizeGroup <- 40
+    sizeGroup <- 35
     sizeBars <- sizeGroup * nLevelsGroup
     
     sizeTitleMain <- 75
-    sizeTitleSub <- ifelse(sub_title, 75, 0)
+    
+    if (sub_title) {
+        sizeTitleSub <- 55 + 20 * desc_lines
+    } else {
+        sizeTitleSub <- 0
+    }
+    
     sizeTitle <- sizeTitleMain + sizeTitleSub
     
     width <- 600

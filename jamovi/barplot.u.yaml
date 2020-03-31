@@ -63,3 +63,8 @@ children:
             optionPart: perc
       - type: CheckBox
         name: show_na
+      - type: LayoutBox
+        margin: large
+        children:
+          - type: CheckBox
+            name: desc

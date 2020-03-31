@@ -16,6 +16,7 @@ items:
         - x_axis
         - labels
         - show_na
+        - desc
       template:
           title: $key
           type: Group
@@ -24,6 +25,5 @@ items:
               type: Image
               description: Barplot
               renderFun: .barplot
-              width: 550
               clearWith: []
 ...

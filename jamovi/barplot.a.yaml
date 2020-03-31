@@ -8,6 +8,7 @@ jas: '1.2'
 options:
     - name: data
       type: Data
+      requiresMissings: true
 
     - name: vars
       title: Variables
@@ -71,6 +72,14 @@ options:
           R: >
             `count` (default), `freq`, or `perc`, provide respectively counts,
             frequencies, or percentages as the bar labels
+        
+    - name: desc
+      title: Show variable descripton
+      type: Bool
+      default: false
+      description:
+          R: >
+            `TRUE` or `FALSE` (default), show variable description in the plot
         
     - name: show_na
       title: Show missing values
