@@ -74,7 +74,7 @@ options:
             frequencies, or percentages as the bar labels
         
     - name: desc
-      title: Show variable descripton
+      title: Show variable description
       type: Bool
       default: false
       description:
