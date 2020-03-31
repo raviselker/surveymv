@@ -11,7 +11,10 @@ items:
       items: (vars)
       clearWith:
         - group
-        - bar_labels
+        - bar_type
+        - labels
+        - x_axis
+        - labels
         - show_na
       template:
           title: $key

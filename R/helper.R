@@ -1,0 +1,249 @@
+barPlotSingle = function(data, var, options, desc, ggtheme) {
+    
+    group <- options$group
+    grouped <- ! is.null(group)
+    yAxis <- options$x_axis
+    labels <- options$labels
+    
+    description <- stringr::str_wrap(desc, 96)
+    barWidth <- 0.65
+    pd <- ggplot2::position_dodge(0.85)
+    
+    if (grouped) {
+        fillGroup <- "group"
+    } else {
+        fillGroup <- "is_missing"
+    }
+    
+    subTitle <- FALSE
+    yLabel <- ifelse(yAxis == "count", "count", "freq")
+    
+    if (yAxis == "count")
+        yTitle <- "Counts"
+    else if (yAxis == "freq")
+        yTitle <- "Frequencies"
+    else
+        yTitle <- "Percentages"
+    
+    barPlot <- data %>%
+        ggplot2::ggplot(ggplot2::aes(x=forcats::fct_rev(var),
+                                     y=get(yLabel),
+                                     fill=forcats::fct_rev(get(fillGroup)))) + 
+        ggplot2::geom_bar(stat="identity", position=pd, width = barWidth) + 
+        ggplot2::coord_flip() +
+        ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.01, .1))) +
+        ggtheme +
+        ggplot2::labs(title = var, subtitle = description, fill = group, y = yTitle) +
+        ggplot2::guides(fill=ggplot2::guide_legend(reverse=TRUE, byrow = TRUE)) +
+        ggplot2::theme(panel.grid.major = ggplot2::element_blank(), 
+                       panel.grid.minor = ggplot2::element_blank(),
+                       axis.title.x=ggplot2::element_text(size=14), 
+                       axis.title.y=ggplot2::element_blank(),
+                       axis.text.y = ggplot2::element_text(hjust = 0),
+                       axis.text.x = ggplot2::element_text(),
+                       plot.title = ggplot2::element_text(hjust = 0),
+                       plot.subtitle =  ggplot2::element_blank(),
+                       plot.title.position="plot",
+                       legend.position="none",
+                       legend.text = ggplot2::element_text(size=11),
+                       legend.title = ggplot2::element_text(size=14),
+                       axis.ticks = ggplot2::element_blank(),
+                       axis.line.x = ggplot2::element_blank())
+    
+    if (subTitle)
+        barPlot = barPlot + 
+        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=12, 
+                                                             face = "italic", 
+                                                             lineheight = 1.15,
+                                                             margin = ggplot2::margin(0,0,15,0)))
+    
+    if (grouped)
+        barPlot = barPlot + ggplot2::theme(legend.position="bottom")
+    
+    aesYAxis <- function (yAxis) {
+        gen_offset <- 0.015
+        if (yAxis == "count") {
+            offset <- max(data$count) * gen_offset
+            return(ggplot2::aes(y=get(yLabel) + offset, label = count))
+        } else if (yAxis == "freq") {
+            offset <- max(data$freq) * gen_offset
+            return(ggplot2::aes(y=get(yLabel) + offset, label = round(freq, 2)))
+        } else {
+            offset <- max(data$freq) * gen_offset
+            return(ggplot2::aes(y=get(yLabel) + offset, label = sprintf("%1.0f%%", 100*freq)))
+        }
+    }
+    
+    if (labels == "in_plot") {
+        barPlot = barPlot + ggplot2::geom_text(aesYAxis(yAxis), position=pd, hjust=0, size = 4) + 
+            ggplot2::theme(axis.text.x = ggplot2::element_blank())
+    } else if (yAxis == "perc") {
+        barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
+    }
+    
+    return(barPlot)
+    
+}
+
+
+stackedBarPlotSingle = function(data, var, options, desc, ggtheme) {
+    
+    group <- options$group
+    grouped <- ! is.null(group)
+    yAxis <- options$x_axis
+    labels <- options$labels
+    
+    description <- stringr::str_wrap(desc, 106)
+    subTitle <- FALSE
+    yLabel <- ifelse(yAxis == "count", "count", "freq")
+    
+    if (yAxis == "count")
+        yTitle <- "Counts"
+    else if (yAxis == "freq")
+        yTitle <- "Frequencies"
+    else
+        yTitle <- "Percentages"
+    
+    if (grouped) {
+        barPlot <- ggplot2::ggplot(data, ggplot2::aes(x=forcats::fct_rev(group), y=get(yLabel), fill=forcats::fct_rev(var)))
+    } else {
+        barPlot <- ggplot2::ggplot(data, ggplot2::aes(x="a", y=get(yLabel), fill=forcats::fct_rev(var)))
+    }
+    
+    barPlot <- barPlot + ggplot2::geom_bar(stat="identity", width = 0.8) + 
+        ggplot2::coord_flip() +
+        ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.01, .1))) +
+        ggtheme + 
+        ggplot2::labs(title = var, subtitle = description, y = yTitle) +
+        ggplot2::guides(fill=ggplot2::guide_legend(reverse=TRUE, byrow = TRUE)) +
+        ggplot2::theme(panel.grid.major = ggplot2::element_blank(), 
+                       panel.grid.minor = ggplot2::element_blank(),
+                       axis.title.x=ggplot2::element_text(size=14),
+                       axis.title.y=ggplot2::element_blank(),
+                       axis.text.y = ggplot2::element_blank(),
+                       axis.text.x = ggplot2::element_text(),
+                       plot.title = ggplot2::element_text(hjust = 0),
+                       plot.subtitle =  ggplot2::element_text(hjust = 0, size=12),
+                       plot.title.position="plot",
+                       legend.position="bottom",
+                       legend.text = ggplot2::element_text(size=11),
+                       legend.title = ggplot2::element_blank(),
+                       axis.ticks = ggplot2::element_blank(),
+                       axis.line.x = ggplot2::element_blank())
+    
+    if (grouped)
+        barPlot = barPlot + ggplot2::theme(axis.text.y = ggplot2::element_text(hjust = 0))
+    
+    if (subTitle)
+        barPlot = barPlot + 
+        ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0, size=12, 
+                                                             face = "italic", 
+                                                             lineheight = 1.15,
+                                                             margin = ggplot2::margin(0,0,15,0)))
+    
+    aesYAxis <- function (yAxis) {
+        if (yAxis == "count") {
+            return(ggplot2::aes(label = count))
+        } else if (yAxis == "freq") {
+            return(ggplot2::aes(label = round(freq, 2)))
+        } else {
+            return(ggplot2::aes(label = sprintf("%1.0f%%", 100*freq)))
+        }
+    }
+    
+    if (labels == "in_plot") {
+        barPlot = barPlot = barPlot + ggplot2::geom_text(data=dplyr::filter(data, count != 0), 
+                                                         aesYAxis(yAxis), 
+                                                         position=ggplot2::position_stack(vjust = 0.5), 
+                                                         size = 3) + 
+            ggplot2::theme(axis.text.x = ggplot2::element_blank())
+    } else if (yAxis == "perc") {
+        barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
+    }
+    
+    return(barPlot)
+}
+
+plotSizeBarPlotSingle = function(data, var, options) {
+    
+    group <- options$group
+    grouped <- ! is.null(group)
+    bar_labels <- options$labels
+    show_na <- options$show_na
+    sub_title <- FALSE
+    
+    if (grouped) {
+        levelsGroup <- levels(data[[group]])
+        nLevelsGroup <- length(levelsGroup)
+        sizeLegend <- 50 + 25 * ceiling(nLevelsGroup / 4)
+    } else {
+        levelsGroup <- 1
+        nLevelsGroup <- 1
+        sizeLegend <- 0
+    }
+    
+    if (bar_labels == "x_axis") {
+        sizeXAxis <- 50
+    } else {
+        sizeXAxis <- 25
+    }
+    
+    levelsVar <- levels(data[[var]])
+    nLevelsVar <- length(levelsVar)
+    
+    if (show_na)
+        nLevelsVar <- nLevelsVar + 1
+    
+    sizeGroup <- 25
+    sizeBars <- sizeGroup * nLevelsGroup * nLevelsVar
+    
+    sizeTitleMain <- 75
+    sizeTitleSub <- ifelse(sub_title, 75, 0)
+    sizeTitle <- sizeTitleMain + sizeTitleSub
+    
+    width <- 550
+    height <- sizeTitle + sizeBars + sizeXAxis + sizeLegend
+    
+    return(list(width=width, height=height))
+}
+
+plotSizeStackedBarPlotSingle = function(data, var, options) {
+    
+    group <- options$group
+    grouped <- ! is.null(group)
+    bar_labels <- options$labels
+    show_na <- options$show_na
+    sub_title <- FALSE
+    
+    if (grouped) {
+        levelsGroup <- levels(data[[group]])
+        nLevelsGroup <- length(levelsGroup)
+        if (show_na)
+            nLevelsGroup <- nLevelsGroup + 1
+    } else {
+        levelsGroup <- 1
+        nLevelsGroup <- 1
+    }
+    
+    if (bar_labels == "x_axis") {
+        sizeXAxis <- 50
+    } else {
+        sizeXAxis <- 25
+    }
+    
+    levelsVar <- levels(data[[var]])
+    nLevelsVar <- length(levelsVar)
+    sizeLegend <- 50 + 25 * ceiling(nLevelsVar / 4)
+    
+    sizeGroup <- 40
+    sizeBars <- sizeGroup * nLevelsGroup
+    
+    sizeTitleMain <- 75
+    sizeTitleSub <- ifelse(sub_title, 75, 0)
+    sizeTitle <- sizeTitleMain + sizeTitleSub
+    
+    width <- 600
+    height <- sizeTitle + sizeBars + sizeXAxis + sizeLegend
+    
+    return(list(width=width, height=height))
+}

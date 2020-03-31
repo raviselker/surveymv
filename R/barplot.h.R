@@ -8,7 +8,9 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         initialize = function(
             vars = NULL,
             group = NULL,
-            bar_labels = "count",
+            bar_type = "grouped",
+            labels = "x_axis",
+            x_axis = "count",
             show_na = FALSE, ...) {
 
             super$initialize(
@@ -34,9 +36,23 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "ordinal"),
                 permitted=list(
                     "factor"))
-            private$..bar_labels <- jmvcore::OptionList$new(
-                "bar_labels",
-                bar_labels,
+            private$..bar_type <- jmvcore::OptionList$new(
+                "bar_type",
+                bar_type,
+                options=list(
+                    "grouped",
+                    "stacked"),
+                default="grouped")
+            private$..labels <- jmvcore::OptionList$new(
+                "labels",
+                labels,
+                options=list(
+                    "x_axis",
+                    "in_plot"),
+                default="x_axis")
+            private$..x_axis <- jmvcore::OptionList$new(
+                "x_axis",
+                x_axis,
                 options=list(
                     "count",
                     "freq",
@@ -49,18 +65,24 @@ barPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
 
             self$.addOption(private$..vars)
             self$.addOption(private$..group)
-            self$.addOption(private$..bar_labels)
+            self$.addOption(private$..bar_type)
+            self$.addOption(private$..labels)
+            self$.addOption(private$..x_axis)
             self$.addOption(private$..show_na)
         }),
     active = list(
         vars = function() private$..vars$value,
         group = function() private$..group$value,
-        bar_labels = function() private$..bar_labels$value,
+        bar_type = function() private$..bar_type$value,
+        labels = function() private$..labels$value,
+        x_axis = function() private$..x_axis$value,
         show_na = function() private$..show_na$value),
     private = list(
         ..vars = NA,
         ..group = NA,
-        ..bar_labels = NA,
+        ..bar_type = NA,
+        ..labels = NA,
+        ..x_axis = NA,
         ..show_na = NA)
 )
 
@@ -82,7 +104,10 @@ barPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                 items="(vars)",
                 clearWith=list(
                     "group",
-                    "bar_labels",
+                    "bar_type",
+                    "labels",
+                    "x_axis",
+                    "labels",
                     "show_na"),
                 template=R6::R6Class(
                     inherit = jmvcore::Group,
@@ -127,8 +152,12 @@ barPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #' @param data .
 #' @param vars .
 #' @param group .
-#' @param bar_labels \code{count} (default), \code{freq}, or \code{perc},
-#'   provide respectively counts, frequencies, or percentages as the bar labels
+#' @param bar_type \code{grouped} (default), or \code{stacked}, provide
+#'   respectively grouped, or stacked bar plots
+#' @param labels \code{x_axis} (default), or \code{in_plot}, show the bar
+#'   labels respectively on the x-axis, or on the bar labels
+#' @param x_axis \code{count} (default), \code{freq}, or \code{perc}, provide
+#'   respectively counts, frequencies, or percentages as the bar labels
 #' @param show_na \code{TRUE} or \code{FALSE} (default), show missing values
 #'   in the plot
 #' @return A results object containing:
@@ -141,7 +170,9 @@ barPlot <- function(
     data,
     vars,
     group,
-    bar_labels = "count",
+    bar_type = "grouped",
+    labels = "x_axis",
+    x_axis = "count",
     show_na = FALSE) {
 
     if ( ! requireNamespace('jmvcore'))
@@ -161,7 +192,9 @@ barPlot <- function(
     options <- barPlotOptions$new(
         vars = vars,
         group = group,
-        bar_labels = bar_labels,
+        bar_type = bar_type,
+        labels = labels,
+        x_axis = x_axis,
         show_na = show_na)
 
     analysis <- barPlotClass$new(

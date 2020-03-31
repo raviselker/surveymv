@@ -25,19 +25,41 @@ children:
     margin: large
     children:
       - type: Label
+        label: Bar Type
+        children:
+          - type: RadioButton
+            name: bar_type_grouped
+            optionName: bar_type
+            optionPart: grouped
+          - type: RadioButton
+            name: bar_type_stacked
+            optionName: bar_type
+            optionPart: stacked
+      - type: Label
         label: Bar Labels
         children:
           - type: RadioButton
-            name: bar_labels_count
-            optionName: bar_labels
+            name: labels_x_axis
+            optionName: labels
+            optionPart: x_axis
+          - type: RadioButton
+            name: labels_in_plot
+            optionName: labels
+            optionPart: in_plot
+      - type: Label
+        label: X Axis
+        children:
+          - type: RadioButton
+            name: x_axis_count
+            optionName: x_axis
             optionPart: count
           - type: RadioButton
-            name: bar_labels_freq
-            optionName: bar_labels
+            name: x_axis_freq
+            optionName: x_axis
             optionPart: freq
           - type: RadioButton
-            name: bar_labels_perc
-            optionName: bar_labels
+            name: x_axis_perc
+            optionName: x_axis
             optionPart: perc
       - type: CheckBox
         name: show_na
