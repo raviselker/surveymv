@@ -2,11 +2,11 @@ DESC_SEP_GROUPED_BAR <- 90
 DESC_SEP_STACKED_BAR <- 100
 
 
-barPlotSingle = function(data, var, options, ggtheme) {
+groupedSingle = function(data, var, options, ggtheme) {
     
     group <- options$group
     grouped <- ! is.null(group)
-    yAxis <- options$x_axis
+    freq <- options$freq
     labels <- options$labels
     
     description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_GROUPED_BAR)
@@ -20,14 +20,12 @@ barPlotSingle = function(data, var, options, ggtheme) {
     }
     
     subTitle <- FALSE
-    yLabel <- ifelse(yAxis == "count", "count", "freq")
+    yLabel <- ifelse(freq == "count", "count", "freq")
     
-    if (yAxis == "count")
-        yTitle <- "Counts"
-    else if (yAxis == "freq")
-        yTitle <- "Frequencies"
+    if (freq == "count")
+        yTitle <- "Frequency (N)"
     else
-        yTitle <- "Percentages"
+        yTitle <- "Frequency (%)"
     
     barPlot <- data %>%
         ggplot2::ggplot(ggplot2::aes(x=forcats::fct_rev(var),
@@ -63,25 +61,22 @@ barPlotSingle = function(data, var, options, ggtheme) {
     if (grouped)
         barPlot = barPlot + ggplot2::theme(legend.position="bottom")
     
-    aesYAxis <- function (yAxis) {
+    aesFreq <- function (freq) {
         gen_offset <- 0.015
-        if (yAxis == "count") {
+        if (freq == "count") {
             offset <- max(data$count) * gen_offset
             return(ggplot2::aes(y=get(yLabel) + offset, label = count))
-        } else if (yAxis == "freq") {
-            offset <- max(data$freq) * gen_offset
-            return(ggplot2::aes(y=get(yLabel) + offset, label = round(freq, 2)))
         } else {
             offset <- max(data$freq) * gen_offset
             return(ggplot2::aes(y=get(yLabel) + offset, label = sprintf("%1.0f%%", 100*freq)))
         }
     }
     
-    if (labels == "in_plot") {
-        barPlot = barPlot + ggplot2::geom_text(aesYAxis(yAxis), position=pd, hjust=0, size = 4) + 
+    if (labels == "inPlot") {
+        barPlot = barPlot + ggplot2::geom_text(aesFreq(freq), position=pd, hjust=0, size = 4) + 
             ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                            axis.line.x = ggplot2::element_blank())
-    } else if (yAxis == "perc") {
+    } else if (freq == "perc") {
         barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
     }
     
@@ -90,22 +85,20 @@ barPlotSingle = function(data, var, options, ggtheme) {
 }
 
 
-stackedBarPlotSingle = function(data, var, options, ggtheme) {
+stackedSingle = function(data, var, options, ggtheme) {
     
     group <- options$group
     grouped <- ! is.null(group)
-    yAxis <- options$x_axis
+    freq <- options$freq
     labels <- options$labels
     
     description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_STACKED_BAR)
-    yLabel <- ifelse(yAxis == "count", "count", "freq")
+    yLabel <- ifelse(freq == "count", "count", "freq")
     
-    if (yAxis == "count")
-        yTitle <- "Counts"
-    else if (yAxis == "freq")
-        yTitle <- "Frequencies"
+    if (freq == "count")
+        yTitle <- "Frequency (N)"
     else
-        yTitle <- "Percentages"
+        yTitle <- "Frequency (%)"
     
     if (grouped) {
         barPlot <- ggplot2::ggplot(data, ggplot2::aes(x=forcats::fct_rev(group), y=get(yLabel), fill=forcats::fct_rev(var)))
@@ -143,37 +136,35 @@ stackedBarPlotSingle = function(data, var, options, ggtheme) {
                                                              lineheight = 1.15,
                                                              margin = ggplot2::margin(0,0,15,0)))
     
-    aesYAxis <- function (yAxis) {
-        if (yAxis == "count") {
+    aesFreq <- function (freq) {
+        if (freq == "count") {
             return(ggplot2::aes(label = count))
-        } else if (yAxis == "freq") {
-            return(ggplot2::aes(label = round(freq, 2)))
         } else {
             return(ggplot2::aes(label = sprintf("%1.0f%%", 100*freq)))
         }
     }
     
-    if (labels == "in_plot") {
+    if (labels == "inPlot") {
         barPlot = barPlot = barPlot + ggplot2::geom_text(data=dplyr::filter(data, count != 0), 
-                                                         aesYAxis(yAxis), 
+                                                         aesFreq(freq), 
                                                          position=ggplot2::position_stack(vjust = 0.5), 
                                                          size = 3) + 
             ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                            axis.ticks.x = ggplot2::element_blank(),
                            axis.line.x = ggplot2::element_blank())
-    } else if (yAxis == "perc") {
+    } else if (freq == "perc") {
         barPlot = barPlot + ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1))
     }
     
     return(barPlot)
 }
 
-plotSizeBarPlotSingle = function(data, var, options) {
+plotSizeGroupedSingle = function(data, var, options) {
     
     group <- options$group
     grouped <- ! is.null(group)
     bar_labels <- options$labels
-    show_na <- options$show_na
+    hideNA <- options$hideNA
     sub_title <- options$desc
     
     desc_lines <- attr(data[[var]], "jmv-desc") %>% 
@@ -190,7 +181,7 @@ plotSizeBarPlotSingle = function(data, var, options) {
         sizeLegend <- 0
     }
     
-    if (bar_labels == "x_axis") {
+    if (bar_labels == "onAxis") {
         sizeXAxis <- 50
     } else {
         sizeXAxis <- 25
@@ -199,7 +190,7 @@ plotSizeBarPlotSingle = function(data, var, options) {
     levelsVar <- levels(data[[var]])
     nLevelsVar <- length(levelsVar)
     
-    if (show_na)
+    if ( ! hideNA)
         nLevelsVar <- nLevelsVar + 1
     
     sizeGroup <- 25
@@ -207,8 +198,8 @@ plotSizeBarPlotSingle = function(data, var, options) {
     
     sizeTitleMain <- 75
     
-    if (sub_title) {
-        sizeTitleSub <- 40 + 25 * desc_lines
+    if (sub_title && length(desc_lines) > 0) {
+        sizeTitleSub <- 35 + 25 * desc_lines
     } else {
         sizeTitleSub <- 0
     }
@@ -221,12 +212,12 @@ plotSizeBarPlotSingle = function(data, var, options) {
     return(list(width=width, height=height))
 }
 
-plotSizeStackedBarPlotSingle = function(data, var, options) {
+plotSizeStackedSingle = function(data, var, options) {
     
     group <- options$group
     grouped <- ! is.null(group)
     bar_labels <- options$labels
-    show_na <- options$show_na
+    hideNA <- options$hideNA
     sub_title <- options$desc
     desc_lines <- attr(data[[var]], "jmv-desc") %>% 
         stringr::str_wrap(DESC_SEP_STACKED_BAR) %>% 
@@ -235,14 +226,14 @@ plotSizeStackedBarPlotSingle = function(data, var, options) {
     if (grouped) {
         levelsGroup <- levels(data[[group]])
         nLevelsGroup <- length(levelsGroup)
-        if (show_na)
+        if ( ! hideNA)
             nLevelsGroup <- nLevelsGroup + 1
     } else {
         levelsGroup <- 1
         nLevelsGroup <- 1
     }
     
-    if (bar_labels == "x_axis") {
+    if (bar_labels == "onAxis") {
         sizeXAxis <- 50
     } else {
         sizeXAxis <- 35
@@ -257,7 +248,7 @@ plotSizeStackedBarPlotSingle = function(data, var, options) {
     
     sizeTitleMain <- 40
     
-    if (sub_title) {
+    if (sub_title  && length(desc_lines) > 0) {
         sizeTitleSub <- 55 + 20 * desc_lines
     } else {
         sizeTitleSub <- 0

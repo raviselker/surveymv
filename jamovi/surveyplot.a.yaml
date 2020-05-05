@@ -1,0 +1,90 @@
+---
+name:  surveyPlot
+title: Survey Plots
+menuGroup: Exploration
+menuSubgroup: surveymv
+version: '1.0.0'
+jas: '1.2'
+
+options:
+    - name: data
+      type: Data
+      requiresMissings: false
+
+    - name: vars
+      title: Variables
+      type: Variables
+      required: true
+      suggested:
+        - nominal
+        - ordinal
+      permitted:
+        - factor
+      
+    - name: group
+      title: Grouping Variable
+      type: Variable
+      suggested:
+        - nominal
+        - ordinal
+      permitted:
+        - factor
+
+    - name: type
+      title: Plot Type
+      type: List
+      options:
+        - title: Grouped bar
+          name: grouped
+        - title: Stacked bar
+          name: stacked
+      default: grouped
+      description:
+          R: >
+            `grouped` (default), or `stacked`, provide respectively grouped,
+            or stacked bar plots
+
+    - name: freq
+      title: Frequency Type
+      type: List
+      options:
+        - title: Counts
+          name: count
+        - title: Percentages
+          name: perc
+      default: count
+      description:
+          R: >
+            `count` (default), or `perc`, provide respectively counts, 
+            or percentages as the frequencies
+
+    - name: labels
+      title: Frequency Labels
+      type: List
+      options:
+        - title: In plot
+          name: inPlot
+        - title: On x-axis
+          name: onAxis
+      default: inPlot
+      description:
+          R: >
+            `inPlot` (default), or `onAxis`, show the bar labels respectively in the plot 
+            near the labels, or on the x-axis
+
+    - name: desc
+      title: Variable description
+      type: Bool
+      default: true
+      description:
+          R: >
+            `TRUE` (default) or `FALSE`, show variable description in the plot
+        
+    - name: hideNA
+      title: Hide missing values
+      type: Bool
+      default: false
+      description:
+          R: >
+            `TRUE` or `FALSE` (default), hide missing values in the plot
+...

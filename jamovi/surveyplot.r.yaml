@@ -1,29 +1,29 @@
 ---
-name:  barPlot
-title: Bar Plot
+name:  surveyPlot
+title: Survey Plots
 jrs:   '1.1'
 
 items:
     - name: plots
-      title: Plots
+      title: ''
       type: Array
-      description: an array of bar plots
+      description: an array of survey plots
       items: (vars)
       clearWith:
         - group
-        - bar_type
+        - type
         - labels
-        - x_axis
+        - freq
         - labels
-        - show_na
+        - hideNA
         - desc
       template:
           title: $key
           type: Group
           items:
-            - name: barplot
+            - name: surveyplot
               type: Image
-              description: Barplot
-              renderFun: .barplot
+              description: Suvery Plot
+              renderFun: .surveyplot
               clearWith: []
 ...

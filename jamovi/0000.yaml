@@ -1,23 +1,22 @@
 ---
-title: What the Package Does (Title Case)
-name: survejmv
-version: 0.0.0
+title: Survey Plots
+name: surveymv
+version: 0.1.0
 jms: '1.0'
 authors:
-  - Who wrote it
-maintainer: The package maintainer <yourself@somewhere.net>
-date: '1970-01-01'
+  - Ravi Selker
+maintainer: Ravi Selker <selker.ravi@gmail.com>
+date: '2020-05-05'
 type: R
-description: >-
-  More about what it does (maybe more than one line) Use four spaces when
-  indenting paragraphs within the Description.
+description: Generates summary plots for your survey data.
 analyses:
-  - title: Bar Plot
-    name: barPlot
-    ns: survejmv
-    menuGroup: survejmv
-    menuTitle: Bar Plot
+  - title: Survey Plots
+    name: surveyPlot
+    ns: surveymv
+    menuGroup: Exploration
+    menuTitle: Survey Plots
+    menuSubgroup: surveymv
 usesNative: true
-minApp: 1.2.14.0
+minApp: 1.2.16.0
 
 ...

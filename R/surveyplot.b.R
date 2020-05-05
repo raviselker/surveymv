@@ -1,15 +1,20 @@
 #' @importFrom magrittr %>%
-barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
-    "barPlotClass",
-    inherit = barPlotBase,
+surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
+    "surveyPlotClass",
+    inherit = surveyPlotBase,
     private = list(
+        #### Init + run functions ----
         .init = function() {
             
             vars <- self$options$vars
             plotsAll <- self$results$plots
             
+            if (length(vars) == 0) {
+                # add a group element if there are no variables    
+            }
+            
             for (var in vars) {
-                image <- plotsAll$get(key=var)$barplot
+                image <- plotsAll$get(key=var)$surveyplot
                 size <- private$.plotSize(var)
                 image$setSize(size$width, size$height)
             }
@@ -17,49 +22,52 @@ barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
         .run = function() {
             
             data <- private$.prepareData()
-            private$.prepareBarPlot(data)
-
+            private$.prepareSurveyPlot(data)
+            
         },
+        
         #### Plot functions ----
-        .prepareBarPlot = function(data) {
+        .prepareSurveyPlot = function(data) {
             
             vars <- self$options$vars
             plotsAll <- self$results$plots
             
             for (var in vars) {
-                image <- plotsAll$get(key=var)$barplot
+                image <- plotsAll$get(key=var)$surveyplot
                 image$setState(list(data=data[[var]], var=var))
             }
         },
-        .barplot = function(image, ggtheme, theme, ...) {
+        .surveyplot = function(image, ggtheme, theme, ...) {
             
             if (is.null(image$state))
                 return(FALSE)
             
             data <- image$state$data
             var <- image$state$var
-
-            if (self$options$bar_type == "stacked") {
-                barPlot <- stackedBarPlotSingle(data, var=var, options=self$options, ggtheme=ggtheme)
+            
+            if (self$options$type == "stacked") {
+                barPlot <- stackedSingle(data, var=var, options=self$options, ggtheme=ggtheme)
             } else {
-                barPlot <- barPlotSingle(data, var=var, options=self$options, ggtheme=ggtheme)
+                barPlot <- groupedSingle(data, var=var, options=self$options, ggtheme=ggtheme)
             }
             
             return(barPlot)
             
         },
+        
         #### Helper functions ----
         .prepareData = function() {
             
             vars <- self$options$vars
             group <- self$options$group
-            show_na <- self$options$show_na
+            hideNA <- self$options$hideNA
             
             dataList <- list()
             for (var in vars) {
+                print(attr(self$data[[var]], "jmv-missings"))
                 dataList[[var]] <- self$data %>%
                     dplyr::select("group" = group, "var" = var) %>%
-                    { if (show_na) dplyr::mutate_if(., is.factor, addNA) else tidyr::drop_na(.) } %>%
+                    { if (hideNA) tidyr::drop_na(.) else dplyr::mutate_if(., is.factor, addNA) } %>%
                     dplyr::mutate_if(is.factor, forcats::fct_explicit_na, na_level = "(Missing)") %>%
                     dplyr::group_by_all(.drop = FALSE) %>%
                     dplyr::tally(name = "count") %>% 
@@ -68,15 +76,15 @@ barPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE))) %>%
                     setter::copy_attributes(self$data[[var]], "jmv-desc")
             }
-
+            
             return(dataList)
         },
         .plotSize = function(var) {
             
-            if (self$options$bar_type == "grouped")
-                size <- plotSizeBarPlotSingle(self$data, var, self$options)
+            if (self$options$type == "grouped")
+                size <- plotSizeGroupedSingle(self$data, var, self$options)
             else
-                size <- plotSizeStackedBarPlotSingle(self$data, var, self$options)
+                size <- plotSizeStackedSingle(self$data, var, self$options)
             
             return(size)
         })

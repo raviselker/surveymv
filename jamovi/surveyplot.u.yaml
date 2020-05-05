@@ -1,0 +1,81 @@
+title: Survey Plots
+name: surveyPlot
+jus: '3.0'
+stage: 0
+compilerMode: tame
+children:
+  - type: VariableSupplier
+    persistentItems: false
+    stretchFactor: 1
+    children:
+      - type: TargetLayoutBox
+        label: Variables
+        children:
+          - type: VariablesListBox
+            name: vars
+            isTarget: true
+      - type: TargetLayoutBox
+        label: Grouping Variable
+        children:
+          - type: VariablesListBox
+            name: group
+            maxItemCount: 1
+            isTarget: true
+            
+  - type: LayoutBox
+    margin: large
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        cell:
+            column: 0
+            row: 0
+        stretchFactor: 1
+        children:
+          - type: Label
+            label: Plot Type
+            children:
+              - type: RadioButton
+                name: type_grouped
+                optionName: type
+                optionPart: grouped
+              - type: RadioButton
+                name: type_stacked
+                optionName: type
+                optionPart: stacked
+          - type: Label
+            label: Additional options
+            children:
+              - type: CheckBox
+                name: hideNA
+              - type: CheckBox
+                name: desc
+
+      - type: LayoutBox
+        cell:
+            column: 1
+            row: 0
+        stretchFactor: 1
+        children:
+          - type: Label
+            label: Frequency Type
+            children:
+              - type: RadioButton
+                name: freq_count
+                optionName: freq
+                optionPart: count
+              - type: RadioButton
+                name: freq_perc
+                optionName: freq
+                optionPart: perc
+          - type: Label
+            label: Frequency Labels
+            children:
+              - type: RadioButton
+                name: labels_inPlot
+                optionName: labels
+                optionPart: inPlot
+              - type: RadioButton
+                name: labels_onAxis
+                optionName: labels
+                optionPart: onAxis
