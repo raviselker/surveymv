@@ -18,12 +18,9 @@ items:
         - hideNA
         - desc
       template:
-          title: $key
-          type: Group
-          items:
-            - name: surveyplot
-              type: Image
-              description: Suvery Plot
-              renderFun: .surveyplot
-              clearWith: []
+          name: $key
+          type: Image
+          description: Suvery Plot
+          renderFun: .surveyplot
+          clearWith: []
 ...

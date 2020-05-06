@@ -14,7 +14,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             }
             
             for (var in vars) {
-                image <- plotsAll$get(key=var)$surveyplot
+                image <- plotsAll$get(key=var)
                 size <- private$.plotSize(var)
                 image$setSize(size$width, size$height)
             }
@@ -33,7 +33,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             plotsAll <- self$results$plots
             
             for (var in vars) {
-                image <- plotsAll$get(key=var)$surveyplot
+                image <- plotsAll$get(key=var)
                 image$setState(list(data=data[[var]], var=var))
             }
         },

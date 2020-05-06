@@ -117,22 +117,11 @@ surveyPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "labels",
                     "hideNA",
                     "desc"),
-                template=R6::R6Class(
-                    inherit = jmvcore::Group,
-                    active = list(
-                        surveyplot = function() private$.items[["surveyplot"]]),
-                    private = list(),
-                    public=list(
-                        initialize=function(options) {
-                            super$initialize(
-                                options=options,
-                                name="undefined",
-                                title="$key")
-                            self$add(jmvcore::Image$new(
-                                options=options,
-                                name="surveyplot",
-                                renderFun=".surveyplot",
-                                clearWith=list()))}))$new(options=options)))}))
+                template=jmvcore::Image$new(
+                    options=options,
+                    name="$key",
+                    renderFun=".surveyplot",
+                    clearWith=list())))}))
 
 surveyPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
     "surveyPlotBase",
