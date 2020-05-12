@@ -32,6 +32,7 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             private$..group <- jmvcore::OptionVariable$new(
                 "group",
                 group,
+                default=NULL,
                 suggested=list(
                     "nominal",
                     "ordinal"),
@@ -168,7 +169,7 @@ surveyPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 surveyPlot <- function(
     data,
     vars,
-    group,
+    group = NULL,
     type = "grouped",
     freq = "count",
     labels = "inPlot",
