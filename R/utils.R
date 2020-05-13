@@ -192,19 +192,14 @@ stackedSingle = function(data, var, options, ggtheme) {
         }
     }
     
-    df <- dplyr::filter(data, count != 0)
-    print(df$var)
-    
     if (labels == "inPlot") {
-        if (nrow(data) > 1) {
-            barPlot = barPlot +
-                ggplot2::geom_text(
-                    data = dplyr::filter(data, count != 0),
-                    aesFreq(freq),
-                    position = ggplot2::position_stack(vjust = 0.5),
-                    size = 3
-                )
-        }
+        barPlot = barPlot +
+            ggplot2::geom_text(
+                data = dplyr::filter(data, count != 0),
+                aesFreq(freq),
+                position = ggplot2::position_stack(vjust = 0.5),
+                size = 3
+            )
         
         barPlot = barPlot +
             ggplot2::theme(

@@ -44,7 +44,10 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             data <- image$state$data
             var <- image$state$var
             
-            if (self$options$type == "stacked") {
+            # return empty plot if variable does not contain values
+            if (nrow(data) == 0 || (nrow(data) == 1 && !self$options$hideNA)) {
+                barPlot <- ggplot2::ggplot() + ggplot2::theme_void()
+            } else if (self$options$type == "stacked") {
                 barPlot <- stackedSingle(data, var=var, options=self$options, ggtheme=ggtheme)
             } else {
                 barPlot <- groupedSingle(data, var=var, options=self$options, ggtheme=ggtheme)
