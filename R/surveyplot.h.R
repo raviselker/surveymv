@@ -23,12 +23,7 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             private$..vars <- jmvcore::OptionVariables$new(
                 "vars",
                 vars,
-                required=TRUE,
-                suggested=list(
-                    "nominal",
-                    "ordinal"),
-                permitted=list(
-                    "factor"))
+                required=TRUE)
             private$..group <- jmvcore::OptionVariable$new(
                 "group",
                 group,
@@ -187,7 +182,6 @@ surveyPlot <- function(
             `if`( ! missing(vars), vars, NULL),
             `if`( ! missing(group), group, NULL))
 
-    for (v in vars) if (v %in% names(data)) data[[v]] <- as.factor(data[[v]])
     for (v in group) if (v %in% names(data)) data[[v]] <- as.factor(data[[v]])
 
     options <- surveyPlotOptions$new(

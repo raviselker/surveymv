@@ -15,11 +15,6 @@ options:
       title: Variables
       type: Variables
       required: true
-      suggested:
-        - nominal
-        - ordinal
-      permitted:
-        - factor
       
     - name: group
       title: Grouping Variable

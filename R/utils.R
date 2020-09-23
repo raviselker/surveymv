@@ -19,7 +19,6 @@ groupedSingle = function(data, var, options, ggtheme) {
         fillGroup <- "is_missing"
     }
     
-    subTitle <- FALSE
     yLabel <- ifelse(freq == "count", "count", "freq")
     
     if (freq == "count")
@@ -215,6 +214,33 @@ stackedSingle = function(data, var, options, ggtheme) {
     return(barPlot)
 }
 
+rainCloud = function(data, var, options, ggtheme) {
+    
+    group <- options$group
+    description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_STACKED_BAR)
+    
+    raincloudPlot <- 
+        ggplot2::ggplot(data = data, ggplot2::aes(y = var, x = group, fill = group)) +
+        geom_flat_violin(position = ggplot2::position_nudge(x = .2, y = 0), alpha = .8) +
+        ggplot2::geom_point(
+            ggplot2::aes(y = var, color = group),
+            position = ggplot2::position_jitter(width = .15),
+            size = .5,
+            alpha = 0.8
+        ) +
+        ggplot2::geom_boxplot(
+            width = .15,
+            guides = FALSE,
+            outlier.shape = NA,
+            alpha = 0.5
+        ) +
+        # expand_limits(x = 3.5) +
+        ggplot2::guides(fill = FALSE, color = FALSE) +
+        ggplot2::coord_flip() + ggtheme
+    
+    return(raincloudPlot)
+}
+
 plotSizeGroupedSingle = function(data, var, options) {
     group <- options$group
     grouped <- !is.null(group)
@@ -314,4 +340,8 @@ plotSizeStackedSingle = function(data, var, options) {
     height <- sizeTitle + sizeBars + sizeXAxis + sizeLegend
     
     return(list(width = width, height = height))
+}
+
+plotSizeRainCloud = function(data, var, options) {
+    return(list(width = 550, height = 600))
 }

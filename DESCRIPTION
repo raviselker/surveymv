@@ -17,6 +17,6 @@ Imports:
     scales,
     forcats,
     setter
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 URL: https://github.com/raviselker/surveymv
 BugReports: https://github.com/raviselker/surveymv/issues
