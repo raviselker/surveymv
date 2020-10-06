@@ -79,8 +79,32 @@ options:
     - name: hideNA
       title: Hide missing values
       type: Bool
-      default: false
+      default: true
       description:
           R: >
-            `TRUE` or `FALSE` (default), hide missing values in the plot
+            `TRUE` (default) or `FALSE`, hide missing values in the plot
+            
+    - name: box
+      title: Box plot
+      type: Bool
+      default: true
+      description:
+          R: >
+            `TRUE` (default) or `FALSE`, add box plot element to continuous plots
+
+    - name: violin
+      title: Violin
+      type: Bool
+      default: true
+      description:
+          R: >
+            `TRUE` (default) or `FALSE`, add violin plot element to continuous plots
+
+    - name: dot
+      title: Data
+      type: Bool
+      default: true
+      description:
+          R: >
+            `TRUE` (default) or `FALSE`, add data dot plot element to continuous plots
 ...

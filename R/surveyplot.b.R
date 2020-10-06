@@ -88,8 +88,12 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     
                 } else {
                     
+                    cols <- c("group"="A", "var"="var")
+                    
                     dataList[[var]] <- self$data %>%
                         dplyr::select("group" = group, "var" = var) %>% 
+                        tibble::add_column(!!!cols[setdiff(names(cols), names(.))]) %>%
+                        dplyr::mutate_if(is.factor, forcats::fct_rev) %>%
                         jmvcore::naOmit() %>%
                         setter::copy_attributes(self$data[[var]], "jmv-desc")
                     

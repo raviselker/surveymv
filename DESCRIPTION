@@ -1,7 +1,7 @@
 Package: surveymv
 Type: Package
 Title: Survey Plots
-Version: 0.1.0
+Version: 0.5.0
 Author: Ravi Selker
 Maintainer: Ravi Selker <selker.ravi@gmail.com>
 Description: Generates summary plots for your survey data.

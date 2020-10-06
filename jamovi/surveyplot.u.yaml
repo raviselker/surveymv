@@ -21,61 +21,87 @@ children:
             name: group
             maxItemCount: 1
             isTarget: true
-            
-  - type: LayoutBox
-    margin: large
-    stretchFactor: 1
+  - type: CheckBox
+    name: desc
+  - type: CollapseBox
+    label: Nominal / Ordinal Plots
+    collapsed: true
     children:
       - type: LayoutBox
-        cell:
-            column: 0
-            row: 0
+        margin: large
         stretchFactor: 1
         children:
-          - type: Label
-            label: Plot Type
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
             children:
-              - type: RadioButton
-                name: type_grouped
-                optionName: type
-                optionPart: grouped
-              - type: RadioButton
-                name: type_stacked
-                optionName: type
-                optionPart: stacked
-          - type: Label
-            label: Additional options
+              - type: Label
+                label: Plot Type
+                children:
+                  - type: RadioButton
+                    name: type_grouped
+                    optionName: type
+                    optionPart: grouped
+                  - type: RadioButton
+                    name: type_stacked
+                    optionName: type
+                    optionPart: stacked
+              - type: Label
+                label: Frequency Type
+                children:
+                  - type: RadioButton
+                    name: freq_count
+                    optionName: freq
+                    optionPart: count
+                  - type: RadioButton
+                    name: freq_perc
+                    optionName: freq
+                    optionPart: perc
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
             children:
-              - type: CheckBox
-                name: hideNA
-              - type: CheckBox
-                name: desc
+              - type: Label
+                label: Frequency Labels
+                children:
+                  - type: RadioButton
+                    name: labels_inPlot
+                    optionName: labels
+                    optionPart: inPlot
+                  - type: RadioButton
+                    name: labels_onAxis
+                    optionName: labels
+                    optionPart: onAxis
+              - type: Label
+                label: Additional options
+                children:
+                  - type: CheckBox
+                    name: hideNA
 
+  - type: CollapseBox
+    label: Continuous Plots
+    collapsed: true
+    children:
       - type: LayoutBox
-        cell:
-            column: 1
-            row: 0
+        margin: large
         stretchFactor: 1
         children:
-          - type: Label
-            label: Frequency Type
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
             children:
-              - type: RadioButton
-                name: freq_count
-                optionName: freq
-                optionPart: count
-              - type: RadioButton
-                name: freq_perc
-                optionName: freq
-                optionPart: perc
-          - type: Label
-            label: Frequency Labels
-            children:
-              - type: RadioButton
-                name: labels_inPlot
-                optionName: labels
-                optionPart: inPlot
-              - type: RadioButton
-                name: labels_onAxis
-                optionName: labels
-                optionPart: onAxis
+              - type: Label
+                label: Plot Elements
+                children:
+                  - type: CheckBox
+                    name: violin
+                  - type: CheckBox
+                    name: box
+                  - type: CheckBox
+                    name: dot

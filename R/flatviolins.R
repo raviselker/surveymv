@@ -31,7 +31,7 @@ GeomFlatViolin <-
     ggplot2::ggproto("GeomFlatViolin", ggplot2::Geom,
             setup_data = function(data, params) {
                 data$width <- data$width %||%
-                    params$width %||% (resolution(data$x, FALSE) * 0.9)
+                    params$width %||% (ggplot2::resolution(data$x, FALSE) * 0.9)
                 
                 # ymin, ymax, xmin, and xmax define the bounding rectangle for each group
                 data %>%

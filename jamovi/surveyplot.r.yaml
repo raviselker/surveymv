@@ -17,6 +17,9 @@ items:
         - labels
         - hideNA
         - desc
+        - violin
+        - box
+        - dot
       template:
           name: $key
           type: Image

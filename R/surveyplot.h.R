@@ -12,7 +12,10 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             freq = "count",
             labels = "inPlot",
             desc = TRUE,
-            hideNA = FALSE, ...) {
+            hideNA = TRUE,
+            box = TRUE,
+            violin = TRUE,
+            dot = TRUE, ...) {
 
             super$initialize(
                 package='surveymv',
@@ -61,7 +64,19 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             private$..hideNA <- jmvcore::OptionBool$new(
                 "hideNA",
                 hideNA,
-                default=FALSE)
+                default=TRUE)
+            private$..box <- jmvcore::OptionBool$new(
+                "box",
+                box,
+                default=TRUE)
+            private$..violin <- jmvcore::OptionBool$new(
+                "violin",
+                violin,
+                default=TRUE)
+            private$..dot <- jmvcore::OptionBool$new(
+                "dot",
+                dot,
+                default=TRUE)
 
             self$.addOption(private$..vars)
             self$.addOption(private$..group)
@@ -70,6 +85,9 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             self$.addOption(private$..labels)
             self$.addOption(private$..desc)
             self$.addOption(private$..hideNA)
+            self$.addOption(private$..box)
+            self$.addOption(private$..violin)
+            self$.addOption(private$..dot)
         }),
     active = list(
         vars = function() private$..vars$value,
@@ -78,7 +96,10 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         freq = function() private$..freq$value,
         labels = function() private$..labels$value,
         desc = function() private$..desc$value,
-        hideNA = function() private$..hideNA$value),
+        hideNA = function() private$..hideNA$value,
+        box = function() private$..box$value,
+        violin = function() private$..violin$value,
+        dot = function() private$..dot$value),
     private = list(
         ..vars = NA,
         ..group = NA,
@@ -86,7 +107,10 @@ surveyPlotOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         ..freq = NA,
         ..labels = NA,
         ..desc = NA,
-        ..hideNA = NA)
+        ..hideNA = NA,
+        ..box = NA,
+        ..violin = NA,
+        ..dot = NA)
 )
 
 surveyPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
@@ -112,7 +136,10 @@ surveyPlotResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "freq",
                     "labels",
                     "hideNA",
-                    "desc"),
+                    "desc",
+                    "violin",
+                    "box",
+                    "dot"),
                 template=jmvcore::Image$new(
                     options=options,
                     name="$key",
@@ -153,8 +180,14 @@ surveyPlotBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #'   labels respectively in the plot  near the labels, or on the x-axis
 #' @param desc \code{TRUE} (default) or \code{FALSE}, show variable
 #'   description in the plot
-#' @param hideNA \code{TRUE} or \code{FALSE} (default), hide missing values in
+#' @param hideNA \code{TRUE} (default) or \code{FALSE}, hide missing values in
 #'   the plot
+#' @param box \code{TRUE} (default) or \code{FALSE}, add box plot element to
+#'   continuous plots
+#' @param violin \code{TRUE} (default) or \code{FALSE}, add violin plot
+#'   element to continuous plots
+#' @param dot \code{TRUE} (default) or \code{FALSE}, add data dot plot element
+#'   to continuous plots
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$plots} \tab \tab \tab \tab \tab an array of survey plots \cr
@@ -169,7 +202,10 @@ surveyPlot <- function(
     freq = "count",
     labels = "inPlot",
     desc = TRUE,
-    hideNA = FALSE) {
+    hideNA = TRUE,
+    box = TRUE,
+    violin = TRUE,
+    dot = TRUE) {
 
     if ( ! requireNamespace('jmvcore'))
         stop('surveyPlot requires jmvcore to be installed (restart may be required)')
@@ -191,7 +227,10 @@ surveyPlot <- function(
         freq = freq,
         labels = labels,
         desc = desc,
-        hideNA = hideNA)
+        hideNA = hideNA,
+        box = box,
+        violin = violin,
+        dot = dot)
 
     analysis <- surveyPlotClass$new(
         options = options,
