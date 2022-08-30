@@ -8,11 +8,7 @@ You can install `surveymv` directly from the jamovi library.
 
 ## Installation in R
 
-Stable release (not yet submitted):
-```r
-install.packages("surveymv")
-```
-Latest development version: 
+Latest version: 
 ```r
 library("devtools")
 install_github("raviselker/surveymv")

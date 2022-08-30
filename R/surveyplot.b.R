@@ -62,7 +62,6 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
         
         #### Helper functions ----
         .prepareData = function() {
-            
             vars <- self$options$vars
             group <- self$options$group
             hideNA <- self$options$hideNA
@@ -70,33 +69,30 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             dataList <- list()
             varTypes <- list()
             for (var in vars) {
-                
                 varTypes[[var]] <- is.factor( self$data[[var]] )
                 
                 if (varTypes[[var]]) {
-                    
                     dataList[[var]] <- self$data %>%
                         dplyr::select("group" = group, "var" = var) %>%
                         { if (hideNA) tidyr::drop_na(.) else dplyr::mutate_if(., is.factor, addNA) } %>%
                         dplyr::mutate_if(is.factor, forcats::fct_explicit_na, na_level = "(Missing)") %>%
+                        dplyr::mutate_if(is.factor, private$.ellipsify) %>%
                         dplyr::group_by_all(.drop = FALSE) %>%
                         dplyr::tally(name = "count") %>% 
                         dplyr::mutate(freq = count/sum(count)) %>%
                         dplyr::mutate_at(dplyr::vars(freq), ~replace(., is.nan(.), 0)) %>%
                         dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE))) %>%
                         setter::copy_attributes(self$data[[var]], "jmv-desc")
-                    
                 } else {
-                    
                     cols <- c("group"="A", "var"="var")
                     
                     dataList[[var]] <- self$data %>%
                         dplyr::select("group" = group, "var" = var) %>% 
                         tibble::add_column(!!!cols[setdiff(names(cols), names(.))]) %>%
                         dplyr::mutate_if(is.factor, forcats::fct_rev) %>%
+                        dplyr::mutate_if(is.factor, private$.ellipsify) %>%
                         jmvcore::naOmit() %>%
                         setter::copy_attributes(self$data[[var]], "jmv-desc")
-                    
                 }
             }
             
@@ -112,5 +108,9 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                 size <- plotSizeStackedSingle(self$data, var, self$options)
             
             return(size)
+        },
+        .ellipsify = function(column, width = 25) {
+            levels(column) <- stringr::str_trunc(levels(column), width)
+            return(column)
         })
 )
