@@ -72,7 +72,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                 varTypes[[var]] <- is.factor( self$data[[var]] )
                 
                 if (varTypes[[var]]) {
-                    dataList[[var]] <- self$data %>%
+                    df <- self$data %>%
                         dplyr::select("group" = group, "var" = var) %>%
                         { if (hideNA) tidyr::drop_na(.) else dplyr::mutate_if(., is.factor, addNA) } %>%
                         dplyr::mutate_if(is.factor, forcats::fct_explicit_na, na_level = "(Missing)") %>%
@@ -81,8 +81,14 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                         dplyr::tally(name = "count") %>% 
                         dplyr::mutate(freq = count/sum(count)) %>%
                         dplyr::mutate_at(dplyr::vars(freq), ~replace(., is.nan(.), 0)) %>%
-                        dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE))) %>%
-                        setter::copy_attributes(self$data[[var]], "jmv-desc")
+                        dplyr::mutate(is_missing = factor(var=="(Missing)", levels=c(TRUE, FALSE)))
+                    
+                    attr(df$var, "jmv-desc") <- attr(self$data[[var]], "jmv-desc")
+                    
+                    if (! is.null(group))
+                        attr(df$group, "jmv-desc") <- attr(self$data[[group]], "jmv-desc")
+                    
+                    dataList[[var]] <- df
                 } else {
                     cols <- c("group"="A", "var"="var")
                     
@@ -91,8 +97,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                         tibble::add_column(!!!cols[setdiff(names(cols), names(.))]) %>%
                         dplyr::mutate_if(is.factor, forcats::fct_rev) %>%
                         dplyr::mutate_if(is.factor, private$.ellipsify) %>%
-                        jmvcore::naOmit() %>%
-                        setter::copy_attributes(self$data[[var]], "jmv-desc")
+                        jmvcore::naOmit()
                 }
             }
             

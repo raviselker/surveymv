@@ -2,6 +2,9 @@ DESC_SEP_GROUPED_BAR <- 90
 DESC_SEP_STACKED_BAR <- 100
 DESC_SEP_RAINBOW <- 90
 
+GROUP_DESC_SEP_GROUPED_BAR <- 85
+GROUP_DESC_SEP_STACKED_BAR <- 95
+GROUP_DESC_SEP_RAINBOW <- 80
 
 groupedSingle = function(data, var, options, ggtheme) {
     group <- options$group
@@ -9,8 +12,17 @@ groupedSingle = function(data, var, options, ggtheme) {
     freq <- options$freq
     labels <- options$labels
     
-    description <-
-        stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_GROUPED_BAR)
+    descriptionVar <- stringr::str_wrap(attr(data$var, "jmv-desc"), DESC_SEP_GROUPED_BAR)
+    
+    descriptionGroup <- NULL; descriptionGroupFull <- NULL;
+    if (grouped) {
+        descriptionGroup <- attr(data$group, "jmv-desc")
+        descriptionGroupFull <- stringr::str_wrap(
+            jmvcore::format("{group} \u2013 {desc}", group=group, desc=descriptionGroup), 
+            GROUP_DESC_SEP_GROUPED_BAR
+        )
+    }
+    
     barWidth <- 0.65
     pd <- ggplot2::position_dodge(0.85)
     
@@ -41,7 +53,8 @@ groupedSingle = function(data, var, options, ggtheme) {
         ggtheme +
         ggplot2::labs(
             title = var,
-            subtitle = description,
+            subtitle = descriptionVar,
+            caption = descriptionGroupFull,
             fill = group,
             y = yTitle
         ) +
@@ -55,6 +68,7 @@ groupedSingle = function(data, var, options, ggtheme) {
             axis.text.x = ggplot2::element_text(),
             plot.title = ggplot2::element_text(hjust = 0),
             plot.subtitle =  ggplot2::element_blank(),
+            plot.caption =  ggplot2::element_blank(),
             plot.title.position = "plot",
             legend.position = "none",
             legend.text = ggplot2::element_text(size = 11),
@@ -62,17 +76,32 @@ groupedSingle = function(data, var, options, ggtheme) {
             axis.ticks = ggplot2::element_blank()
         )
     
-    if (options$desc && length(description) > 0)
-        barPlot = barPlot +
-        ggplot2::theme(
-            plot.subtitle = ggplot2::element_text(
-                hjust = 0,
-                size = 13,
-                face = "italic",
-                lineheight = 1.15,
-                margin = ggplot2::margin(0, 0, 15, 0)
-            )
-        )
+    if (options$desc) {
+        if (length(descriptionVar) > 0) {
+            barPlot = barPlot +
+                ggplot2::theme(
+                    plot.subtitle = ggplot2::element_text(
+                        hjust = 0,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(0, 0, 15, 0)
+                    )
+                )
+        }
+        if (length(descriptionGroup) > 0) {
+            barPlot = barPlot +
+                ggplot2::theme(
+                    plot.caption = ggplot2::element_text(
+                        hjust = 1,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(15, 0, 0, 0)
+                    )
+                )
+        }
+    }
     
     if (grouped)
         barPlot = barPlot + ggplot2::theme(legend.position = "bottom")
@@ -117,8 +146,17 @@ stackedSingle = function(data, var, options, ggtheme) {
     freq <- options$freq
     labels <- options$labels
     
-    description <-
-        stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_STACKED_BAR)
+    descriptionVar <- stringr::str_wrap(attr(data$var, "jmv-desc"), DESC_SEP_STACKED_BAR)
+    
+    descriptionGroup <- NULL; descriptionGroupFull <- NULL;
+    if (grouped) {
+        descriptionGroup <- attr(data$group, "jmv-desc")
+        descriptionGroupFull <- stringr::str_wrap(
+            jmvcore::format("{group} \u2013 {desc}", group=group, desc=descriptionGroup), 
+            GROUP_DESC_SEP_STACKED_BAR
+        )
+    }
+    
     yLabel <- ifelse(freq == "count", "count", "freq")
     
     if (freq == "count")
@@ -149,40 +187,69 @@ stackedSingle = function(data, var, options, ggtheme) {
         ggplot2::coord_flip() +
         ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.01, .1))) +
         ggtheme +
-        ggplot2::labs(title = var,
-                      subtitle = description,
-                      y = yTitle) +
+        ggplot2::labs(
+            title = var,
+            subtitle = descriptionVar,
+            caption = descriptionGroupFull,
+            fill = var,
+            y = yTitle,
+            x = group
+        ) +
         ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE, byrow = TRUE)) +
         ggplot2::theme(
             panel.grid.major = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             axis.title.x = ggplot2::element_text(size = 14),
-            axis.title.y = ggplot2::element_blank(),
+            axis.title.y = ggplot2::element_text(size = 14),
             axis.text.y = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_text(),
             plot.title = ggplot2::element_text(hjust = 0),
             plot.subtitle =  ggplot2::element_blank(),
+            plot.caption =  ggplot2::element_blank(),
             plot.title.position = "plot",
             legend.position = "bottom",
             legend.text = ggplot2::element_text(size = 11),
-            legend.title = ggplot2::element_blank(),
+            legend.title = ggplot2::element_text(size = 14),
             axis.ticks.y = ggplot2::element_blank()
         )
     
     if (grouped)
-        barPlot = barPlot + ggplot2::theme(axis.text.y = ggplot2::element_text(hjust = 0))
-    
-    if (options$desc && length(description) > 0)
-        barPlot = barPlot +
-        ggplot2::theme(
-            plot.subtitle = ggplot2::element_text(
-                hjust = 0,
-                size = 13,
-                face = "italic",
-                lineheight = 1.15,
-                margin = ggplot2::margin(0, 0, 15, 0)
-            )
+        barPlot = barPlot + ggplot2::theme(
+            axis.text.y = ggplot2::element_text(hjust = 0),
         )
+    else
+        barPlot = barPlot + ggplot2::theme(
+            axis.title.y = ggplot2::element_blank(),
+            legend.title = ggplot2::element_blank()
+        )
+    
+    if (options$desc) {
+        if (length(descriptionVar) > 0) {
+            barPlot = barPlot +
+                ggplot2::theme(
+                    plot.subtitle = ggplot2::element_text(
+                        hjust = 0,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(0, 0, 15, 0)
+                    )
+                )
+        }
+        if (length(descriptionGroup) > 0) {
+            barPlot = barPlot +
+                ggplot2::theme(
+                    plot.caption = ggplot2::element_text(
+                        hjust = 1,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(15, 0, 0, 0)
+                    )
+                )
+        }
+    }
+    
     
     aesFreq <- function (freq) {
         if (freq == "count") {
@@ -198,7 +265,7 @@ stackedSingle = function(data, var, options, ggtheme) {
                 data = dplyr::filter(data, count != 0),
                 aesFreq(freq),
                 position = ggplot2::position_stack(vjust = 0.5),
-                size = 3
+                size = 4
             )
         
         barPlot = barPlot +
@@ -218,8 +285,17 @@ stackedSingle = function(data, var, options, ggtheme) {
 rainCloud = function(data, var, options, ggtheme) {
     
     group <- options$group
-    description <- stringr::str_wrap(attr(data, "jmv-desc"), DESC_SEP_RAINBOW)
+    descriptionVar <- stringr::str_wrap(attr(data$var, "jmv-desc"), DESC_SEP_RAINBOW)
     
+    descriptionGroup <- NULL; descriptionGroupFull <- NULL;
+    if (! is.null(group)) {
+        descriptionGroup <- attr(data$group, "jmv-desc")
+        descriptionGroupFull <- stringr::str_wrap(
+            jmvcore::format("{group} \u2013 {desc}", group=group, desc=descriptionGroup), 
+            GROUP_DESC_SEP_RAINBOW
+        )
+    }
+
     raincloudPlot <- 
         ggplot2::ggplot(data = data, ggplot2::aes(y = var, x = group, fill = group))
     
@@ -252,7 +328,8 @@ rainCloud = function(data, var, options, ggtheme) {
         ggplot2::coord_flip() + 
         ggtheme +
         ggplot2::labs(title = var,
-                      subtitle = description,
+                      subtitle = descriptionVar,
+                      caption = descriptionGroupFull,
                       x = group,
                       y = var) +
         ggplot2::theme(
@@ -262,23 +339,40 @@ rainCloud = function(data, var, options, ggtheme) {
             axis.text.x = ggplot2::element_text(),
             plot.title = ggplot2::element_text(hjust = 0),
             plot.subtitle =  ggplot2::element_blank(),
+            plot.caption =  ggplot2::element_blank(),
             plot.title.position = "plot",
             legend.position = "none",
             legend.text = ggplot2::element_text(size = 11),
             legend.title = ggplot2::element_text(size = 14)
         )
     
-    if (options$desc && length(description) > 0)
-        raincloudPlot = raincloudPlot +
-        ggplot2::theme(
-            plot.subtitle = ggplot2::element_text(
-                hjust = 0,
-                size = 13,
-                face = "italic",
-                lineheight = 1.15,
-                margin = ggplot2::margin(0, 0, 15, 0)
-            )
-        )
+    if (options$desc) {
+        if (length(descriptionVar) > 0) {
+            raincloudPlot = raincloudPlot +
+                ggplot2::theme(
+                    plot.subtitle = ggplot2::element_text(
+                        hjust = 0,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(0, 0, 15, 0)
+                    )
+                )
+        }
+        if (length(descriptionGroup) > 0) {
+            raincloudPlot = raincloudPlot +
+                ggplot2::theme(
+                    plot.caption = ggplot2::element_text(
+                        hjust = 1,
+                        size = 13,
+                        face = "italic",
+                        lineheight = 1.15,
+                        margin = ggplot2::margin(15, 0, 0, 0)
+                    )
+                )
+        }
+    }
+
     
     if (is.null(group)) {
         raincloudPlot = raincloudPlot +
