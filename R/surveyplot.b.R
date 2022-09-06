@@ -76,7 +76,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                         dplyr::select("group" = group, "var" = var) %>%
                         { if (hideNA) tidyr::drop_na(.) else dplyr::mutate_if(., is.factor, addNA) } %>%
                         dplyr::mutate_if(is.factor, forcats::fct_explicit_na, na_level = "(Missing)") %>%
-                        dplyr::mutate_if(is.factor, private$.ellipsify) %>%
+                        dplyr::mutate_if(is.factor, private$.ellipsifyLevels) %>%
                         dplyr::group_by_all(.drop = FALSE) %>%
                         dplyr::tally(name = "count") %>% 
                         dplyr::mutate(freq = count/sum(count)) %>%
@@ -95,8 +95,8 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     dataList[[var]] <- self$data %>%
                         dplyr::select("group" = group, "var" = var) %>% 
                         tibble::add_column(!!!cols[setdiff(names(cols), names(.))]) %>%
+                        dplyr::mutate_if(is.factor, private$.ellipsifyLevels) %>%
                         dplyr::mutate_if(is.factor, forcats::fct_rev) %>%
-                        dplyr::mutate_if(is.factor, private$.ellipsify) %>%
                         jmvcore::naOmit()
                 }
             }
@@ -114,8 +114,20 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             return(size)
         },
-        .ellipsify = function(column, width = 25) {
-            levels(column) <- stringr::str_trunc(levels(column), width)
+        #' Truncates levels of a vector when they exceed a certain width.
+        #' 
+        #' @description 
+        #' Adds an ellipsis in the middle of the level if the the level exceeds the provided width. 
+        #'
+        #' @param column a factor for which the levels need to be shortened
+        #' @param width the maximum number of characters of the levels
+        #'
+        #' @return a factor with (potentially) shortened levels
+        .ellipsifyLevels = function(column, width = 25) {
+            levels(column) <- make.unique(
+                stringr::str_trunc(levels(column), width, side="center"), 
+                sep=" - "
+            )
             return(column)
         })
 )
