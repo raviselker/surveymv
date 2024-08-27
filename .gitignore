@@ -38,9 +38,10 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# renv library
-renv/library/
-renv/staging/
+# renv related stuff
+.Rprofile
+renv/
+renv.lock
 
 # jamovi options js
 jamovi/ui/*.options.js
