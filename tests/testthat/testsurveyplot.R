@@ -1,6 +1,6 @@
-context('surveyplot')
+testthat::context('surveyplot')
 
-test_that('surveyPlot doesn\'t return an error for variables with no values', {
+testthat::test_that('surveyPlot doesn\'t return an error for variables with no values', {
 
     data <- data.frame('A' = factor(),
                        'B' = factor(),

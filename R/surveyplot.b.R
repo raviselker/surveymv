@@ -73,9 +73,9 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                 
                 if (varTypes[[var]]) {
                     df <- self$data %>%
-                        dplyr::select("group" = group, "var" = var) %>%
+                        dplyr::select(group=!!group, var=!!var) %>%
                         { if (hideNA) tidyr::drop_na(.) else dplyr::mutate_if(., is.factor, addNA) } %>%
-                        dplyr::mutate_if(is.factor, forcats::fct_explicit_na, na_level = "(Missing)") %>%
+                        dplyr::mutate_if(is.factor, forcats::fct_na_value_to_level, level = "(Missing)") %>%
                         dplyr::mutate_if(is.factor, private$.ellipsifyLevels) %>%
                         dplyr::group_by_all(.drop = FALSE) %>%
                         dplyr::tally(name = "count") %>% 
@@ -93,7 +93,7 @@ surveyPlotClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     cols <- c("group"="A", "var"="var")
                     
                     dataList[[var]] <- self$data %>%
-                        dplyr::select("group" = group, "var" = var) %>% 
+                        dplyr::select(group=!!group, var=!!var) %>% 
                         tibble::add_column(!!!cols[setdiff(names(cols), names(.))]) %>%
                         dplyr::mutate_if(is.factor, private$.ellipsifyLevels) %>%
                         dplyr::mutate_if(is.factor, forcats::fct_rev) %>%
